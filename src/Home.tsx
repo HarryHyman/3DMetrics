@@ -4,6 +4,39 @@ import {Button, FileTrigger} from "react-aria-components";
 import {redirect, useNavigate} from "react-router-dom";
 import {loadAsync} from "jszip";
 import * as cheerio from "cheerio";
+import * as JSZip from "jszip";
+
+async function readResult(zip: JSZip) {
+    const result = zip.file("Result.xml");
+    if (!result) throw new Error("No result.xml");
+
+    const resultContents = await result.async("string");
+
+    const $ = cheerio.load(resultContents);
+
+    return {
+        scores: {
+            overall: $("TimeSpyPerformance3DMarkScore").text(),
+            cpu: $("TimeSpyPerformanceCPUScore").text(),
+            gpu: $("TimeSpyPerformanceGraphicsScore").text()
+        }
+    }
+}
+
+async function readSI(zip: JSZip) {
+    const SI = zip.file("SI.xml");
+    if (SI) throw new Error("No SI.xml");
+
+    const SIContents = await result.async("string");
+
+    const $ = cheerio.load(SIContents);
+
+    return {
+        systemInfo: {
+            computerName: $("Computer_Name").text()
+        }
+    }
+}
 
 function Home() {
   const [file, setFile] = useState<string[] | null | undefined>(null);
@@ -26,16 +59,13 @@ function Home() {
 
             console.log(zip);
 
-            const result = zip.file("Result.xml");
-            if (!result) throw new Error("No result.xml");
+            const result = await readResult(zip);
 
-            const resultContents = await result.async("string");
+            const state = {
+                ...result
+            }
 
-            const $ = cheerio.load(resultContents);
-
-            console.log(resultContents);
-
-            navigate("/results", { state: { score: $("TimeSpyPerformance3DMarkScore").text() }});
+            navigate("/results", { state });
         }}>
         <Button>Select a file</Button>
       </FileTrigger>

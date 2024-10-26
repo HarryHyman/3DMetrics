@@ -8,7 +8,22 @@ function Results() {
 
     return (
         <>
-            <div className="score">{state.score}</div>
+            <div className="score__circle">
+                <div className="score__title">OVERALL</div>
+                <div className="score">{state.scores.overall}</div>
+            </div>
+
+
+            <div className="subscore__container">
+                <div className="subscore">
+                    <div className="score__title">CPU</div>
+                    <div className="subscore__text">{state.scores.cpu}</div>
+                </div>
+                <div className="subscore">
+                    <div className="score__title">Graphics</div>
+                    <div className="subscore__text">{state.scores.gpu}</div>
+                </div>
+            </div>
         </>
     )
 }
