@@ -1,5 +1,6 @@
 import {useLocation} from "react-router-dom";
 import "./Results.css"
+import Chart from "./Chart.tsx";
 
 function Results() {
     const {state} = useLocation();
@@ -24,6 +25,13 @@ function Results() {
                     <div className="subscore__text">{state.scores.gpu}</div>
                 </div>
             </div>
+
+            <div className="info">
+                <div className="info2">{state.systemInfo.computerName}</div>
+                <div className="info2">{state.systemInfo.date.toString()}</div>
+            </div>
+
+            <Chart data={{gpuTemperature: state.data["GPUZ/GpuTemperature/0/2:"]}}></Chart>
         </>
     )
 }

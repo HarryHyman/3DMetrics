@@ -25,15 +25,31 @@ async function readResult(zip: JSZip) {
 
 async function readSI(zip: JSZip) {
     const SI = zip.file("SI.xml");
-    if (SI) throw new Error("No SI.xml");
+    if (!SI) throw new Error("No SI.xml");
 
-    const SIContents = await result.async("string");
+    const SIContents = await SI.async("string");
 
     const $ = cheerio.load(SIContents);
 
     return {
         systemInfo: {
-            computerName: $("Computer_Name").text()
+            computerName: $("Computer_Name").text(),
+            date: $("RTC").text(),
+        }
+    }
+}
+
+async function readMonitoringData(zip: JSZip) {
+    const monitoringData = zip.file("RawMonitoringData.json");
+    if (!monitoringData) throw new Error("No RawMonitoringData.json");
+
+    const monitoringDataContents = await monitoringData.async("text");
+
+    const monitoringDataJson = JSON.parse(monitoringDataContents);
+
+    return {
+        data: {
+            ...monitoringDataJson
         }
     }
 }
@@ -60,9 +76,13 @@ function Home() {
             console.log(zip);
 
             const result = await readResult(zip);
+            const si = await readSI(zip);
+            const monitoringData = await readMonitoringData(zip);
 
             const state = {
-                ...result
+                ...result,
+                ...si,
+                ...monitoringData
             }
 
             navigate("/results", { state });
