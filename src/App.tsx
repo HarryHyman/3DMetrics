@@ -1,33 +1,25 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import {Button, FileTrigger} from "react-aria-components";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [file, setFile] = useState<string[] | null | undefined>(null);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>3DMetrics</h1>
+
+      <FileTrigger
+          acceptedFileTypes={[".3dmark-result"]}
+        onSelect={(e) => {
+          if (!e) return;
+          const files = Array.from(e);
+          const filenames = files.map((file) => file.name);
+          setFile(filenames);
+          console.log(files);
+        }}>
+        <Button>Select a file</Button>
+      </FileTrigger>
     </>
   )
 }
